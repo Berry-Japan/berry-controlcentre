@@ -10,7 +10,6 @@
 ** destructor.
 *****************************************************************************/
 
-
 #include <sys/stat.h>
 
 #include <iostream>
@@ -27,11 +26,11 @@ void Berry_Control_Centre::init()
     int i;
     for (i=0; i<5; i++) net_stat[i]=1;
 
-    struct stat s;
+    /*struct stat s;
     if (stat("/etc/sysconfig/network-scripts/ifcfg-lo", &s)) pushButtonLo->setEnabled(FALSE);
     if (stat("/etc/sysconfig/network-scripts/ifcfg-eth0", &s)) pushButtonEth0->setEnabled(FALSE);
     if (stat("/etc/sysconfig/network-scripts/ifcfg-eth1", &s)) pushButtonEth1->setEnabled(FALSE);
-    if (stat("/etc/sysconfig/network-scripts/ifcfg-wlan0", &s)) pushButtonWlan0->setEnabled(FALSE);
+    if (stat("/etc/sysconfig/network-scripts/ifcfg-wlan0", &s)) pushButtonWlan0->setEnabled(FALSE);*/
 
     ifstream f;
     char buff[256];
@@ -102,6 +101,42 @@ void Berry_Control_Centre::init()
     lineEditCName->setText(QString::fromUtf8(buff));
     // WORKGROUP for samba
     lineEditWGROUP->setText(QString::fromUtf8(workgroup));
+
+    // Network Interfaces
+//    FILE *pp=popen("cat /proc/net/dev | grep ':' | grep -v lo | grep -v sit | cut -d ':' -f 1 | tr -d ' '", "r");
+    FILE *pp=popen("cat /proc/net/dev | grep ':' | grep -v sit | cut -d ':' -f 1 | tr -d ' '", "r");
+    if (pp) {
+//        while ((i=fread(buff, sizeof(char), 256, pp)) > 0) {
+//	    buff[i-1]=0;
+        while (fgets(buff, 256, pp)) {
+	    buff[strlen(buff)-1]=0;
+	    comboBoxNDev->insertItem(QString::fromUtf8(buff));
+        }
+        pclose(pp);
+    }
+    netChangeDev();
+    // DNS
+    pp=popen("cat /etc/resolv.conf | grep nameserver | cut -d ' ' -f 2 | tail -n 2 | head -n 1", "r");
+    if (pp) {
+	i=fread(buff, sizeof(char), 256, pp);
+	buff[i-1]=0;
+	lineEditDNS->setText(QString::fromUtf8(buff));
+	pclose(pp);
+    }
+    pp=popen("cat /etc/resolv.conf | grep nameserver | cut -d ' ' -f 2 | tail -n 1", "r");
+    if (pp) {
+	i=fread(buff, sizeof(char), 256, pp);
+	buff[i-1]=0;
+	lineEditDNS2->setText(QString::fromUtf8(buff));
+	pclose(pp);
+    }
+}
+
+void Berry_Control_Centre::cnameModify()
+{
+    QString buff;
+    buff = "perl -pi -e 's/[^#]workgroup.*=.*/workgroup = " + lineEditWGROUP->text() + "/' /etc/samba/smb.conf\n/etc/init.d/smb restart";
+    system(buff);
 }
 
 void Berry_Control_Centre::netStatLo()
@@ -158,59 +193,105 @@ void Berry_Control_Centre::netStatWlan0()
     }
 }
 
-
-void Berry_Control_Centre::cnameModify()
+void Berry_Control_Centre::netChangeDev()
 {
-    QString buff;
-    buff = "perl -pi -e 's/[^#]workgroup.*=.*/workgroup = " + lineEditWGROUP->text() + "/' /etc/samba/smb.conf\n/etc/init.d/smb restart";
-    system(buff);
+    int n;
+    char buff[256];
+    // IP Address
+    FILE *pp=popen("/sbin/ifconfig "+comboBoxNDev->currentText()+" |egrep -o 'addr:[0-9.]+' | cut -b 6-", "r");
+    if (pp) {
+	n=fread(buff, sizeof(char), 256, pp);
+	buff[n-1]=0;
+	lineEditIP->setText(QString::fromUtf8(buff));
+	pclose(pp);
+    }
+    // Netmask
+    pp=popen("/sbin/ifconfig "+comboBoxNDev->currentText()+" |egrep -o Mask:[0-9.]+ | cut -b 6-", "r");
+    if (pp) {
+	n=fread(buff, sizeof(char), 256, pp);
+	buff[n-1]=0;
+	lineEditMask->setText(QString::fromUtf8(buff));
+	pclose(pp);
+    }
+    // Gateway
+    pp=popen("route -n |grep "+comboBoxNDev->currentText()+" |grep UG | tr -s \" \" |cut -d \" \" -f 2", "r");
+    if (pp) {
+	n=fread(buff, sizeof(char), 256, pp);
+	buff[n-1]=0;
+	lineEditGw->setText(QString::fromUtf8(buff));
+	pclose(pp);
+    }
 }
 
+
+void Berry_Control_Centre::netUp()
+{
+	system("killall dhcpcd; ifconfig "+comboBoxNDev->currentText()+" down;"\
+		"ifconfig "+comboBoxNDev->currentText()+" "+lineEditIP->text()+" netmask "+lineEditMask->text()+";"\
+		"route add default gateway "+lineEditGw->text()+" "+comboBoxNDev->currentText());
+}
 
 void Berry_Control_Centre::yumCheckUpdate()
 {
-    ifstream f;
+    int n;
     char buff[256];
-
-    system("yum check-update | grep updates-released > /tmp/BerryCC.tmp");
-    f.open("/tmp/BerryCC.tmp");
-    while (!f.fail()) {
-	f.getline(buff, 256);
-//	textEditYum->setText(QString::fromUtf8(buff));
-	textEditYum->insert(QString::fromUtf8(buff)+"\n");
+    FILE *pp=popen("yum check-update | grep updates-released", "r");
+    if (pp) {
+	listBoxYum->clear();
+	while (fgets(buff, 255, pp)) {
+	    buff[strlen(buff)-1]=0;
+	    //textEditYum->insert(QString::fromUtf8(buff)+"\n");
+	    listBoxYum->insertItem(QString::fromUtf8(buff));
+	}
+	pclose(pp);
     }
-    f.close();
-    unlink("/tmp/BerryCC.tmp");
 }
-
 
 void Berry_Control_Centre::yumUpdate()
 {
-    ifstream f;
+    int n;
     char buff[256];
-
-    system("yum update > /tmp/BerryCC.tmp");
-    f.open("/tmp/BerryCC.tmp");
-    while (!f.fail()) {
-	f.getline(buff, 256);
-	textEditYum->insert(QString::fromUtf8(buff)+"\n");
+    FILE *pp=popen("yum update", "r");
+    if (pp) {
+	listBoxYum->clear();
+	while (fgets(buff, 255, pp)) {
+	    buff[strlen(buff)-1]=0;
+	    //textEditYum->insert(QString::fromUtf8(buff)+"\n");
+	    listBoxYum->insertItem(QString::fromUtf8(buff));
+	}
+	pclose(pp);
     }
-    f.close();
-    unlink("/tmp/BerryCC.tmp");
 }
-
 
 void Berry_Control_Centre::yumClean()
 {
-    ifstream f;
+    int n;
     char buff[256];
-
-    system("yum clean all > /tmp/BerryCC.tmp");
-    f.open("/tmp/BerryCC.tmp");
-    while (!f.fail()) {
-	f.getline(buff, 256);
-	textEditYum->insert(QString::fromUtf8(buff)+"\n");
+    FILE *pp=popen("yum clean all", "r");
+    if (pp) {
+	listBoxYum->clear();
+	while (fgets(buff, 255, pp)) {
+	    buff[strlen(buff)-1]=0;
+	    //textEditYum->insert(QString::fromUtf8(buff)+"\n");
+	    listBoxYum->insertItem(QString::fromUtf8(buff));
+	}
+	pclose(pp);
     }
-    f.close();
-    unlink("/tmp/BerryCC.tmp");
+}
+
+void Berry_Control_Centre::yumInstall()
+{
+    int n;
+    char buff[256];
+    QString s = listBoxYum->currentText();
+    n = s.find(' ');
+    FILE *pp=popen("yum -y install "+s.left(n), "r");
+    if (pp) {
+	listBoxYum->clear();
+	while (fgets(buff, 255, pp)) {
+	    buff[strlen(buff)-1]=0;
+	    listBoxYum->insertItem(QString::fromUtf8(buff));
+	}
+	pclose(pp);
+    }
 }
