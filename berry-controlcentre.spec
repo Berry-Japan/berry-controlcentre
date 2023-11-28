@@ -1,5 +1,5 @@
 %define name berry-controlcentre
-%define version 0.02
+%define version 0.03
 %define release b1
 
 Name:		%{name}

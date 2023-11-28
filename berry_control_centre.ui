@@ -114,47 +114,6 @@
                 </widget>
                 <widget class="QLabel">
                     <property name="name">
-                        <cstring>textLabelCpuFlags</cstring>
-                    </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>260</x>
-                            <y>170</y>
-                            <width>220</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
-                    <property name="lineWidth">
-                        <number>1</number>
-                    </property>
-                    <property name="midLineWidth">
-                        <number>0</number>
-                    </property>
-                    <property name="text">
-                        <string>Flags</string>
-                    </property>
-                    <property name="alignment">
-                        <set>WordBreak|AlignVCenter</set>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabelSupport</cstring>
-                    </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>260</x>
-                            <y>220</y>
-                            <width>220</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
-                    <property name="text">
-                        <string>&lt;a href="http://yui.mine.nu/eindex.html"&gt;Berry Linux Homepage&lt;/a&gt;</string>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
                         <cstring>textLabelSystem</cstring>
                     </property>
                     <property name="geometry">
@@ -187,24 +146,6 @@
                 </widget>
                 <widget class="QLabel">
                     <property name="name">
-                        <cstring>textLabelAbout</cstring>
-                    </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>20</x>
-                            <y>20</y>
-                            <width>210</width>
-                            <height>42</height>
-                        </rect>
-                    </property>
-                    <property name="text">
-                        <string>&lt;font size="+1"&gt;&lt;b&gt;Berry Control Centre&lt;/b&gt;&lt;br&gt;&lt;/font&gt;
-
-&amp;copy;2005 Yuichiro Nakada</string>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
                         <cstring>pixmapLabelComputer</cstring>
                     </property>
                     <property name="geometry">
@@ -220,6 +161,65 @@
                     </property>
                     <property name="scaledContents">
                         <bool>true</bool>
+                    </property>
+                </widget>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabelSupport</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>20</x>
+                            <y>240</y>
+                            <width>220</width>
+                            <height>20</height>
+                        </rect>
+                    </property>
+                    <property name="text">
+                        <string>&lt;a href="http://yui.mine.nu/eindex.html"&gt;Berry Linux Homepage&lt;/a&gt;</string>
+                    </property>
+                </widget>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabelCpuFlags</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>260</x>
+                            <y>170</y>
+                            <width>220</width>
+                            <height>90</height>
+                        </rect>
+                    </property>
+                    <property name="lineWidth">
+                        <number>1</number>
+                    </property>
+                    <property name="midLineWidth">
+                        <number>0</number>
+                    </property>
+                    <property name="text">
+                        <string>Flags</string>
+                    </property>
+                    <property name="alignment">
+                        <set>WordBreak|AlignVCenter</set>
+                    </property>
+                </widget>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabelAbout</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>20</x>
+                            <y>20</y>
+                            <width>210</width>
+                            <height>42</height>
+                        </rect>
+                    </property>
+                    <property name="text">
+                        <string>&lt;font size="+1"&gt;&lt;b&gt;Berry Control Centre&lt;/b&gt;&lt;br&gt;&lt;/font&gt;
+
+&amp;copy;2005-2006 Yuichiro Nakada</string>
                     </property>
                 </widget>
             </widget>

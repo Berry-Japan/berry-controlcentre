@@ -47,21 +47,35 @@ void Berry_Control_Centre::init()
     // CPU info
     system("cat /proc/cpuinfo | grep \"model name\" | sed 's/model name\t: //' > /tmp/BerryCC.tmp\n\
 	cat /proc/cpuinfo | grep \"cpu MHz\" | sed 's/cpu MHz.*: //' >> /tmp/BerryCC.tmp\n\
+	free | grep Mem: | awk '{print $2}' >> /tmp/BerryCC.tmp\n\
+	free | grep cache: | awk '{print $4}' >> /tmp/BerryCC.tmp\n\
 	cat /proc/cpuinfo | grep \"cache size\" | sed 's/cache size\t: //' >> /tmp/BerryCC.tmp\n\
 	cat /proc/cpuinfo | grep \"flags\" | sed 's/flags\t: //' >> /tmp/BerryCC.tmp\n\
 	cat /proc/cpuinfo | grep \"bogomips\" | sed 's/bogomips\t: //' >> /tmp/BerryCC.tmp\n\
 	");
     f.open("/tmp/BerryCC.tmp");
     if (!f.fail()) {
+	// type
 	f.getline(buff, 256);
 	textLabelCpu->setText(QString::fromUtf8(buff));
+	// speed
 	f.getline(buff, 256);
 	strncat(buff, " MHz", 256);
 	textLabelCpuMHz->setText(QString::fromUtf8(buff));
+	// memory
+	int mem, mfree, cache;
 	f.getline(buff, 256);
+	mem = atoi(buff);
+	f.getline(buff, 256);
+	mfree = atoi(buff);
+	f.getline(buff, 256);
+	cache = atoi(buff);
+	sprintf(buff, "Mem %d%% Use / Cache %d KB", 100-mfree*100/mem, cache);
 	textLabelCpuCache->setText(QString::fromUtf8(buff));
+	// flag
 	f.getline(buff, 256);
 	textLabelCpuFlags->setText(QString::fromUtf8(buff));
+	// bogomips
 	f.getline(buff, 256);
 	strncat(buff, " BogoMips", 256);
 	textLabelCpuBMips->setText(QString::fromUtf8(buff));
@@ -83,7 +97,7 @@ void Berry_Control_Centre::init()
 	//}
     }
     f.close();
-//    remove_file("/tmp/BerryCC.tmp", NULL);
+    unlink("/tmp/BerryCC.tmp");
     // Computer Name
     lineEditCName->setText(QString::fromUtf8(buff));
     // WORKGROUP for samba
@@ -166,6 +180,7 @@ void Berry_Control_Centre::yumCheckUpdate()
 	textEditYum->insert(QString::fromUtf8(buff)+"\n");
     }
     f.close();
+    unlink("/tmp/BerryCC.tmp");
 }
 
 
@@ -181,6 +196,7 @@ void Berry_Control_Centre::yumUpdate()
 	textEditYum->insert(QString::fromUtf8(buff)+"\n");
     }
     f.close();
+    unlink("/tmp/BerryCC.tmp");
 }
 
 
@@ -196,4 +212,5 @@ void Berry_Control_Centre::yumClean()
 	textEditYum->insert(QString::fromUtf8(buff)+"\n");
     }
     f.close();
+    unlink("/tmp/BerryCC.tmp");
 }
