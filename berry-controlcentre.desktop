@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Berry Control Centre
+Name[ja]=BERRYコントロールセンター
+Comment=Setting for Berry Linux.
+Comment[ja]=Berry Linuxの設定をします。
+Exec=kdesu /opt/berry/BerryCC
+Icon=kcontrol
+Type=Application
+Encoding=UTF-8
+Categories=X-Red-Hat-Base;Application;Berry;
