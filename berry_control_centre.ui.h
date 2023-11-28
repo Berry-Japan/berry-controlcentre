@@ -151,3 +151,49 @@ void Berry_Control_Centre::cnameModify()
     buff = "perl -pi -e 's/[^#]workgroup.*=.*/workgroup = " + lineEditWGROUP->text() + "/' /etc/samba/smb.conf\n/etc/init.d/smb restart";
     system(buff);
 }
+
+
+void Berry_Control_Centre::yumCheckUpdate()
+{
+    ifstream f;
+    char buff[256];
+
+    system("yum check-update | grep updates-released > /tmp/BerryCC.tmp");
+    f.open("/tmp/BerryCC.tmp");
+    while (!f.fail()) {
+	f.getline(buff, 256);
+//	textEditYum->setText(QString::fromUtf8(buff));
+	textEditYum->insert(QString::fromUtf8(buff)+"\n");
+    }
+    f.close();
+}
+
+
+void Berry_Control_Centre::yumUpdate()
+{
+    ifstream f;
+    char buff[256];
+
+    system("yum update > /tmp/BerryCC.tmp");
+    f.open("/tmp/BerryCC.tmp");
+    while (!f.fail()) {
+	f.getline(buff, 256);
+	textEditYum->insert(QString::fromUtf8(buff)+"\n");
+    }
+    f.close();
+}
+
+
+void Berry_Control_Centre::yumClean()
+{
+    ifstream f;
+    char buff[256];
+
+    system("yum clean all > /tmp/BerryCC.tmp");
+    f.open("/tmp/BerryCC.tmp");
+    while (!f.fail()) {
+	f.getline(buff, 256);
+	textEditYum->insert(QString::fromUtf8(buff)+"\n");
+    }
+    f.close();
+}

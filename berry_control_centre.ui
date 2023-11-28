@@ -334,6 +334,67 @@
                 <attribute name="title">
                     <string>Auto Update</string>
                 </attribute>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>pushButtonYumUpdate</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>200</x>
+                            <y>230</y>
+                            <width>119</width>
+                            <height>29</height>
+                        </rect>
+                    </property>
+                    <property name="text">
+                        <string>Update</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>pushButtonYumCk</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>20</x>
+                            <y>230</y>
+                            <width>170</width>
+                            <height>29</height>
+                        </rect>
+                    </property>
+                    <property name="text">
+                        <string>Check Update Packages</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>pushButtonYumClean</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>330</x>
+                            <y>230</y>
+                            <width>119</width>
+                            <height>29</height>
+                        </rect>
+                    </property>
+                    <property name="text">
+                        <string>Clean</string>
+                    </property>
+                </widget>
+                <widget class="QTextEdit">
+                    <property name="name">
+                        <cstring>textEditYum</cstring>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>17</x>
+                            <y>21</y>
+                            <width>470</width>
+                            <height>191</height>
+                        </rect>
+                    </property>
+                </widget>
             </widget>
             <widget class="QWidget">
                 <property name="name">
@@ -579,6 +640,24 @@
         <receiver>Berry_Control_Centre</receiver>
         <slot>cnameModify()</slot>
     </connection>
+    <connection>
+        <sender>pushButtonYumCk</sender>
+        <signal>clicked()</signal>
+        <receiver>Berry_Control_Centre</receiver>
+        <slot>yumCheckUpdate()</slot>
+    </connection>
+    <connection>
+        <sender>pushButtonYumUpdate</sender>
+        <signal>clicked()</signal>
+        <receiver>Berry_Control_Centre</receiver>
+        <slot>yumUpdate()</slot>
+    </connection>
+    <connection>
+        <sender>pushButtonYumClean</sender>
+        <signal>clicked()</signal>
+        <receiver>Berry_Control_Centre</receiver>
+        <slot>yumClean()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">berry_control_centre.ui.h</include>
@@ -589,6 +668,9 @@
     <slot>netStatEth1()</slot>
     <slot>netStatWlan0()</slot>
     <slot>cnameModify()</slot>
+    <slot>yumCheckUpdate()</slot>
+    <slot>yumUpdate()</slot>
+    <slot>yumClean()</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
